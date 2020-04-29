@@ -18,5 +18,8 @@
     <ClCompile Include="laba_4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Header.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

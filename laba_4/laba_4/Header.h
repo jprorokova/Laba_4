@@ -1,6 +1,4 @@
-
 #include <cstdint>
-
 #include <fstream>
 #include <iostream>
 
@@ -24,12 +22,14 @@ private:
 	int16_t numChannels;   // Mono = 1, Stereo = 2
 	int32_t sampleRate;    // Наприклад 44100
 	int32_t byteRate;      // == SampleRate * NumChannels * BitsPerSample/8
-	int32_t blockAlign;    // == NumChannels * BitsPerSample/8
+	int32_t blockAlign;    // == NumChannels * BitsPerSample/8, количество байт для одного семпла
 	int16_t bitsPerSample; // 8 bits = 8, 16 bits = 16, etc.
 	// "data" subchunk
 	int32_t subchunk2Id;   // 0x64617461 – літери "data"
 	int32_t subchunk2Size; // == NumSamples * NumChannels * BitsPerSample/8, кількість байтів аудіоданих
+	int16_t* data;   // samples
 
-	int16_t* newData;    //измененные семпли
+
+	int16_t* newData;    //измененные семплы
 	int32_t newSize;		
 };
