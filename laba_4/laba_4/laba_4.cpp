@@ -29,7 +29,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	FILE* file;
 	errno_t err;
-	err = fopen_s(&file, "Slipknot - Three Nil.wav", "rb");
+	err = fopen_s(&file, "data.wav", "rb");
 	if (err)
 	{
 		cout << "Failed open file, error %d" << err;
