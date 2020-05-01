@@ -45,10 +45,32 @@ void DataWav::writeWav(char filename[])
 
 DataWav::~DataWav()
 {
+	delete[] this-> newData;
 	delete[] this->data;
 }
 
 void DataWav::interpol(double coef)
 {
-
+	this->newSize = this->subchunk2Size * coef;
+	this->newData = new int16_t[this->newSize];
+	int temp;
+	int32_t x0, x1, y0, y1, y, x;
+	for (int i = 0; i < this->subchunk2Size / this->blockAlign; i++) { 
+		temp = i * coef;
+		this->newData[temp] = this->data[i];
+	}
+	for (int i = 0; i < this->subchunk2Size / this->blockAlign - 1; i++) {
+		x0 = i * coef;// х0 - позици€ сЇмпла в новом массиве данных
+		x1 = (i + 1) * coef;
+		y0 = this->newData[x0];
+		y1 = this->newData[x1];
+		temp = x1 -1- x0 ; // (x - x0), x0-позици€ перед неизвестной , х1- позици€ после нужной неивестной
+		for (int j = 1; j < temp+1 ; j++) { //поиск всех неизвестных 
+			y = ((y1 - y0) * j) / (x1 - x0) + y0;// формула интерпол€ционного поиска
+			x = x1 - 1;//позици€ элемента , который нужно найти 
+			this->newData[x] = y;
+		}
+	}
+	this->chunkSize += this->newSize - this->subchunk2Size;
+	this->subchunk2Size = this->newSize;
 }
