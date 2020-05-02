@@ -1,0 +1,5 @@
+﻿  Header.cpp
+D:\Studying\C++\II semester\ОП\laba4.1\laba_4\laba_4\Header.cpp(54,38): warning C4244: =: преобразование "double" в "int32_t", возможна потеря данных
+D:\Studying\C++\II semester\ОП\laba4.1\laba_4\laba_4\Header.cpp(59,12): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+D:\Studying\C++\II semester\ОП\laba4.1\laba_4\laba_4\Header.cpp(63,10): warning C4244: =: преобразование "double" в "int32_t", возможна потеря данных
+D:\Studying\C++\II semester\ОП\laba4.1\laba_4\laba_4\Header.cpp(64,16): warning C4244: =: преобразование "double" в "int32_t", возможна потеря данных
