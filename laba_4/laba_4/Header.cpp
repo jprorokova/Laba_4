@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <tchar.h>
+#include <math.h>
+#include <iostream>
+#include <cstdint>
+#include"Header.h"
+#include<fstream>
+using namespace std;
+
+class DataWaw;
+
+DataWav::DataWav(char fileName[])
+{
+	FILE* in;
+	errno_t err;
+	err = fopen_s(&in, fileName, "rb");
+	if (err) {
+		cout << "Failed to open input file, error: " << err;
+		return;
+	}
+
+	fread(&this->chunkId, sizeof(this->chunkId), 1, in);
+	fread(&this->chunkSize, sizeof(this->chunkSize), 1, in);
+	fread(&this->format, sizeof(this->format), 1, in);
+	fread(&this->subchunk1Id, sizeof(this->subchunk1Id), 1, in);
+	fread(&this->subchunk1Size, sizeof(this->subchunk1Size), 1, in);
+	fread(&this->audioFormat, sizeof(this->audioFormat), 1, in);
+	fread(&this->numChannels, sizeof(this->numChannels), 1, in);
+	fread(&this->sampleRate, sizeof(this->sampleRate), 1, in);
+	fread(&this->byteRate, sizeof(this->byteRate), 1, in);
+	fread(&this->blockAlign, sizeof(this->blockAlign), 1, in);
+	fread(&this->bitsPerSample, sizeof(this->bitsPerSample), 1, in);
+	fread(&this->subchunk2Id, sizeof(this->subchunk2Id), 1, in);
+	fread(&this->subchunk2Size, sizeof(this->subchunk2Size), 1, in);
+
+	this->data = new int16_t[this->subchunk2Size / this->blockAlign];//створенн€ динам≥чних даних
+
+	for (int i = 0; i < this->subchunk2Size / this->blockAlign; i++)
+	{
+		int16_t temp;
+
+		fread(&temp, sizeof(this->blockAlign), 1, in);
+		this->data[i] = temp;
+	}
+
+	fclose(in);
+
+}
+
+DataWav::~DataWav()
+{
+	delete[] this-> newData;
+	delete[] this->data;
+}
+
+void DataWav::writeWav(char fileName[])
+{
+		FILE* result;
+		errno_t err;
+		err = fopen_s(&result, fileName, "wb");
+
+		fwrite(&this->chunkId, sizeof(this->chunkId), 1, result);
+		fwrite(&this->chunkSize, sizeof(this->chunkSize), 1, result);
+		fwrite(&this->format, sizeof(this->format), 1, result);
+		fwrite(&this->subchunk1Id, sizeof(this->subchunk1Id), 1, result);
+		fwrite(&this->subchunk1Size, sizeof(this->subchunk1Size), 1, result);
+		fwrite(&this->audioFormat, sizeof(this->audioFormat), 1, result);
+		fwrite(&this->numChannels, sizeof(this->numChannels), 1, result);
+		fwrite(&this->sampleRate, sizeof(this->sampleRate), 1, result);
+		fwrite(&this->byteRate, sizeof(this->byteRate), 1, result);
+		fwrite(&this->blockAlign, sizeof(this->blockAlign), 1, result);
+		fwrite(&this->bitsPerSample, sizeof(this->bitsPerSample), 1, result);
+		fwrite(&this->subchunk2Id, sizeof(this->subchunk2Id), 1, result);
+		fwrite(&this->subchunk2Size, sizeof(this->subchunk2Size), 1, result);
+
+		for (int i = 0; i < this->subchunk2Size / this->blockAlign; i++) {
+			fwrite(&this->newData[i], sizeof(this->newData[i]), 1, result);
+		}
+		fclose(result);
+
+}
+
+void DataWav::interpol(double coef)
+{
+	this->newSize = this->subchunk2Size * coef;
+	this->newData = new int16_t[this->newSize];
+	int temp;
+	int32_t x0, x1, y0, y1, y, x;
+	for (int i = 0; i < this->subchunk2Size / this->blockAlign; i++) { 
+		temp = i * coef;
+		this->newData[temp] = this->data[i];
+	}
+	for (int i = 0; i < this->subchunk2Size / this->blockAlign - 1; i++) {
+		x0 = i * coef;// х0 - позици€ сЇмпла в новом массиве данных
+		x1 = (i + 1) * coef;
+		y0 = this->newData[x0];
+		y1 = this->newData[x1];
+		temp = x1 -1- x0 ; // (x - x0), x0-позици€ перед неизвестной , х1- позици€ после нужной неивестной
+		for (int j = 1; j < temp+1 ; j++) { //поиск всех неизвестных 
+			y = ((y1 - y0) * j) / (x1 - x0) + y0;// формула интерпол€ционного поиска
+			x = x1 - 1;//позици€ элемента , который нужно найти 
+			this->newData[x] = y;
+		}
+	}
+	this->chunkSize += this->newSize - this->subchunk2Size;
+	this->subchunk2Size = this->newSize;
+}
