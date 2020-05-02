@@ -23,8 +23,8 @@ int  main(int argc, char* argv[])
     DataWav AudioFile(argv[1]);
 
 
-    /*WavFile wavFile(argv[1]);
-    wavFile.interpolation(resize);
+    DataWav wavFile(argv[1]);
+    wavFile.interpol(coef);
     wavFile.writeWav(argv[2]);
-    return 0;*/
+    return 0;
 }
